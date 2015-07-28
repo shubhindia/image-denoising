@@ -4,9 +4,15 @@ function finalProject()
 close all; % Closing all windows, clearing all variables
 clear all; %#ok<CLFUN>
 disp('Image Denoising - Christopher Turner'); % Display script intro
-original=imread('NoisyImage.png'); % Import image
-original = rgb2gray(original); % Convert image to grayscale
-original = double(original); % Convert image matrix to doubles
+
+original = double( imread( 'bac.jpg' ) ) / 255;
+original = rgb2gray( original );
+original = original + rand( size( original) ) - 0.5;
+
+
+%original=imread('NoisyImage.png'); % Import image
+%original = rgb2gray(original); % Convert image to grayscale
+%original = double(original); % Convert image matrix to doubles
 [height,width] = size(original); % Store size of image matrix
 denoisedImage = zeros(size(original)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
@@ -25,15 +31,16 @@ if (choice==2) % Use gaussian filtering
     denoisedImage=imfilter(original,gauss); % Apply filter
 end; % End if statement
 if (choice==3) % Use mean filtering
-    for r=4:height-3
-        for c=4:width-3
+    kernal=input('Please choose a kernal size: ');
+    for r=1+kernal:height-kernal
+        for c=1+kernal:width-kernal
             sum=0;
-            for blockr=r-2:r+2
-                for blockc=c-2:c+2
+            for blockr=r-kernal+1:r+kernal-1
+                for blockc=c-kernal+1:c+kernal-1
                     sum= sum+ original(blockr,blockc); % Sum up the surrounding pixels
                 end; % End for loop
             end; % End for loop
-            average=sum/9; % Find the average value of the surrounding pixels
+            average=sum/(kernal^2); % Find the average value of the surrounding pixels
             denoisedImage(r,c) = average; % Assign the average of the surrounding pixels to a given pixel's value
         end; % End for loop
     end; % End for loop
