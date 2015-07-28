@@ -3,16 +3,21 @@
 function finalProject()
 close all; % Closing all windows, clearing all variables
 clear all; %#ok<CLFUN>
-disp('Image Denoising - Christopher Turner'); % Display script intro
+disp('Image Denoising - Christopher Turner'); % Display function intro
 
+% To use a normal image and add noise:
+% --------------------------------------------------
 original = double( imread( 'bac.jpg' ) ) / 255; % Retrieves original image
 original = rgb2gray( original ); % Converts image to grayscale
 original = original + rand( size( original) ) - 0.5; % Adds noise to grayscale
 
-
+% For already noisy images:
+% --------------------------------------------------
 %original=imread('NoisyImage.png'); % Import image
 %original = rgb2gray(original); % Convert image to grayscale
 %original = double(original); % Convert image matrix to doubles
+% --------------------------------------------------
+
 [height,width] = size(original); % Store size of image matrix
 denoisedImage = zeros(size(original)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
