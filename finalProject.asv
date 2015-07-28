@@ -35,8 +35,8 @@ if (choice==3) % Use mean filtering
     for r=1+kernel:height-kernel % Isolates filtering based on kernel (height)
         for c=1+kernel:width-kernel % Isolates filtering based on kernel (widht)
             sum=0;
-            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
-                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+            for blockr=r-kernel+1:r+kernel-1
+                for blockc=c-kernel+1:c+kernel-1
                     sum= sum+ original(blockr,blockc); % Sum up the surrounding pixels
                 end; % End for loop
             end; % End for loop
