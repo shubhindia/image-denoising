@@ -49,6 +49,7 @@ if (choice==3) % Use mean filtering
             denoisedImage(r,c) = average; % Assign the average of the surrounding pixels to a given pixel's value
         end; % End for loop
     end; % End for loop
-end; % End for loop
+    
+end; % End if loop
 imshow(denoisedImage,[]); % Display final image
 end
