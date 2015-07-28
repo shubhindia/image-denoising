@@ -7,13 +7,13 @@ disp('Image Denoising - Christopher Turner'); % Display function intro
 
 % To use a normal image and add noise:
 % --------------------------------------------------
-original = double( imread( 'bac.jpg' ) ) / 255; % Retrieves original image
+original = double( imread( 'image/bac.jpg' ) ) / 255; % Retrieves original image
 original = rgb2gray( original ); % Converts image to grayscale
 original = original + rand( size( original) ) - 0.5; % Adds noise to grayscale
 
 % For already noisy images:
 % --------------------------------------------------
-%original=imread('NoisyImage.png'); % Import image
+%original=imread('images/NoisyImage.png'); % Import image
 %original = rgb2gray(original); % Convert image to grayscale
 %original = double(original); % Convert image matrix to doubles
 % --------------------------------------------------
