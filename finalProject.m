@@ -11,22 +11,46 @@ B = original(:,:,3);
 R = R + rand( size( R) ) - 0.5; % Adds noise to grayscale
 G = G + rand( size( G) ) - 0.5; % Adds noise to grayscale
 B = B + rand( size( B) ) - 0.5; % Adds noise to grayscale
+% RGBnoisy=cat(3,R,G,B);
+% imshow(RGBnoisy);
 
 % To use a normal image and add noise:
 % original = rgb2gray( original ); % Converts image to grayscale
 % original = original + rand( size( original) ) - 0.5; % Adds noise to grayscale
 
 
-[height,width] = size(original); % Store size of image matrix
-denoisedImage = zeros(size(original)); % Zero-out final image matrix
+[heightr,widthr] = size(R); % Store size of image matrix
+[heightg,widthg] = size(G); % Store size of image matrix
+[heightb,widthb] = size(B); % Store size of image matrix
+denoisedImageRed = zeros(size(R)); % Zero-out final image matrix
+denoisedImageGreen = zeros(size(G)); % Zero-out final image matrix
+denoisedImageBlue = zeros(size(B)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
 %% Median Filtering
 if (choice==1)
-    for blocka=2:height-1 % Exclude top/bottom borders
-        for blockb=2:width-1 % Exclude side borders
-            array = reshape(original(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+    for blocka=2:heightr-1 % Exclude top/bottom borders
+        for blockb=2:widthr-1 % Exclude side borders
+            array = reshape(R(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
-            denoisedImage(blocka,blockb) = imgmed; % Assign median value to given pixel
+            denoisedImageRed(blocka,blockb) = imgmed; % Assign median value to given pixel
+        end;
+        
+    end;
+    
+     for blocka=2:heightg-1 % Exclude top/bottom borders
+        for blockb=2:widthg-1 % Exclude side borders
+            array = reshape(G(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+            imgmed=median(array); % Find median of array
+            denoisedImageGreen(blocka,blockb) = imgmed; % Assign median value to given pixel
+        end;
+        
+    end;
+    
+     for blocka=2:heightb-1 % Exclude top/bottom borders
+        for blockb=2:widthb-1 % Exclude side borders
+            array = reshape(B(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+            imgmed=median(array); % Find median of array
+            denoisedImageBlue(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
@@ -42,21 +66,46 @@ end;
 %% Mean Filtering
 if (choice==3)
     kernel=input('Please choose a kernel size: ');
-    for r=1+kernel:height-kernel % Isolates filtering based on kernel (height)
-        for c=1+kernel:width-kernel % Isolates filtering based on kernel (widht)
-            sum=0;
+    for r=1+kernel:heightr-kernel % Isolates filtering based on kernel (height)
+        for c=1+kernel:widthr-kernel % Isolates filtering based on kernel (widht)
+            sumr=0;
             for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
                 for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
-                    sum= sum+ original(blockr,blockc); % Sum up the surrounding pixels
+                    sumr= sumr+ R(blockr,blockc); % Sum up the surrounding pixels
                 end;
             end;
-            average=sum/(kernel^2); % Find the average value of the surrounding pixels
-            denoisedImage(r,c) = average; % Assign the average of the surrounding pixels to a given pixel's value
+            averager=sumr/(kernel^2); % Find the average value of the surrounding pixels
+            denoisedImageRed(r,c) = averager; % Assign the average of the surrounding pixels to a given pixel's value
         end;
     end;
     
+    for r=1+kernel:heightg-kernel % Isolates filtering based on kernel (height)
+        for c=1+kernel:widthg-kernel % Isolates filtering based on kernel (widht)
+            sumg=0;
+            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
+                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+                    sumg= sumg+ G(blockr,blockc); % Sum up the surrounding pixels
+                end;
+            end;
+            averageg=sumg/(kernel^2); % Find the average value of the surrounding pixels
+            denoisedImageGreen(r,c) = averageg; % Assign the average of the surrounding pixels to a given pixel's value
+        end;
+    end;
+    
+    for r=1+kernel:heightb-kernel % Isolates filtering based on kernel (height)
+        for c=1+kernel:widthb-kernel % Isolates filtering based on kernel (widht)
+            sumb=0;
+            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
+                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+                    sumb= sumb+ B(blockr,blockc); % Sum up the surrounding pixels
+                end;
+            end;
+            averageb=sumb/(kernel^2); % Find the average value of the surrounding pixels
+            denoisedImageBlue(r,c) = averageb; % Assign the average of the surrounding pixels to a given pixel's value
+        end;
+    end;
 end;
 %% Final Image Composition
 denoisedImage=cat(3,denoisedImageRed,denoisedImageGreen,denoisedImageBlue);
-imshow(denoisedImage,[]); % Display final image
+imshow(denoisedImage); % Display final image
 end
