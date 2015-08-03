@@ -8,15 +8,10 @@ original = double( imread( 'images/bac.jpg' ) ) / 255; % Retrieves original imag
 R = original(:,:,1);
 G = original(:,:,2);
 B = original(:,:,3);
-R = R + rand( size( R) ) - 0.5; % Adds noise to grayscale
-G = G + rand( size( G) ) - 0.5; % Adds noise to grayscale
-B = B + rand( size( B) ) - 0.5; % Adds noise to grayscale
-% RGBnoisy=cat(3,R,G,B);
-% imshow(RGBnoisy);
-
-% To use a normal image and add noise:
-% original = rgb2gray( original ); % Converts image to grayscale
-% original = original + rand( size( original) ) - 0.5; % Adds noise to grayscale
+noiseMag = 0.3;
+R = R + noiseMag*rand( size( R) ) - noiseMag/2; % Adds noise to red
+G = G + noiseMag*rand( size( G) ) - noiseMag/2; % Adds noise to green
+B = B + noiseMag*rand( size( B) ) - noiseMag/2; % Adds noise to blue
 
 
 [heightr,widthr] = size(R); % Store size of image matrix
@@ -26,38 +21,39 @@ denoisedImageRed = zeros(size(R)); % Zero-out final image matrix
 denoisedImageGreen = zeros(size(G)); % Zero-out final image matrix
 denoisedImageBlue = zeros(size(B)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
+kernel=input('Please choose a kernel size: ');
 %% Median Filtering
 if (choice==1)
-    for blocka=2:heightr-1 % Exclude top/bottom borders
-        for blockb=2:widthr-1 % Exclude side borders
-            array = reshape(R(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+    for blocka=idivide(kernel,2):heightr-idivide(kernel,2) % Exclude top/bottom borders
+        for blockb=idivide(kernel,2):widthr-idivide(kernel,2) % Exclude side borders
+            array = reshape(R(blocka-idivide(kernel,2):blocka+idivide(kernel,2),blockb-idivide(kernel,2):blockb+idivide(kernel,2)),(kernel^2),1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageRed(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-     for blocka=2:heightg-1 % Exclude top/bottom borders
-        for blockb=2:widthg-1 % Exclude side borders
-            array = reshape(G(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+  for blocka=idivide(kernel,2):heightg-idivide(kernel,2) % Exclude top/bottom borders
+        for blockb=idivide(kernel,2):widthg-idivide(kernel,2) % Exclude side borders
+            array = reshape(G(blocka-idivide(kernel,2):blocka+idivide(kernel,2),blockb-idivide(kernel,2):blockb+idivide(kernel,2)),(kernel^2),1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageGreen(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-     for blocka=2:heightb-1 % Exclude top/bottom borders
-        for blockb=2:widthb-1 % Exclude side borders
-            array = reshape(B(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+   for blocka=idivide(kernel,2):heightb-idivide(kernel,2) % Exclude top/bottom borders
+        for blockb=idivide(kernel,2):widthb-idivide(kernel,2) % Exclude side borders
+            array = reshape(B(blocka-idivide(kernel,2):blocka+idivide(kernel,2),blockb-idivide(kernel,2):blockb+idivide(kernel,2)),(kernel^2),1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
-            denoisedImageBlue(blocka,blockb) = imgmed; % Assign median value to given pixel
+            denoisedImageRed(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
 end;
 %% Gaussian Filtering
 if (choice==2)
-    gauss=fspecial('gaussian',[9 9],3); % Create gaussian distribution filter
+    gauss=fspecial('gaussian',[(kernel^2),(kernel^2)],3); % Create gaussian distribution filter
     denoisedImageRed=imfilter(R,gauss); % Apply filter
     denoisedImageGreen=imfilter(G,gauss); % Apply filter
     denoisedImageBlue=imfilter(B,gauss); % Apply filter
@@ -65,7 +61,6 @@ if (choice==2)
 end;
 %% Mean Filtering
 if (choice==3)
-    kernel=input('Please choose a kernel size: ');
     for r=1+kernel:heightr-kernel % Isolates filtering based on kernel (height)
         for c=1+kernel:widthr-kernel % Isolates filtering based on kernel (widht)
             sumr=0;
