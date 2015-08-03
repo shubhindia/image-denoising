@@ -1,6 +1,6 @@
 % Christopher Turner, www.christopherturner.io
 % SPCS 2015: Computer Engineering
-function finalProject()
+function denoiseImage()
 close all; % Closing all windows, clearing all variables
 clear all; %#ok<CLFUN>
 disp('Image Denoising - Christopher Turner'); % Display function intro
