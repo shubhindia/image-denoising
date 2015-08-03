@@ -26,29 +26,36 @@ denoisedImageRed = zeros(size(R)); % Zero-out final image matrix
 denoisedImageGreen = zeros(size(G)); % Zero-out final image matrix
 denoisedImageBlue = zeros(size(B)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
+kernel=input('Please choose a kernel size: ');
+if (mod(kernel,2)==1)
+    halfkern=(kernel-1)/2;
+else
+    halfkern=kernel/2;
+end
+kernsquare=kernel^2
 %% Median Filtering
 if (choice==1)
-    for blocka=6:heightr-5 % Exclude top/bottom borders
-        for blockb=6:widthr-5 % Exclude side borders
-            array = reshape(R(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
+    for blocka=1+halfkern:heightr-halfkern % Exclude top/bottom borders
+        for blockb=1+halfkern:widthr-halfkern % Exclude side borders
+            array = reshape(R(blocka-halfkern:blocka+halfkern,blockb-halfkern:blockb+halfkern),kernsquare,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageRed(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-    for blocka=6:heightg-5 % Exclude top/bottom borders
-        for blockb=6:widthg-5 % Exclude side borders
-            array = reshape(G(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
+    for blocka=1+halfkern:heightg-halfkern % Exclude top/bottom borders
+        for blockb=1+halfkern:widthg-halfkern % Exclude side borders
+            array = reshape(G(blocka-halfkern:blocka+halfkern,blockb-halfkern:blockb+halfkern),kernsquare,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageGreen(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-    for blocka=6:heightb-5 % Exclude top/bottom borders
-        for blockb=6:widthb-5 % Exclude side borders
-            array = reshape(B(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
+    for blocka=1+halfkern:heightb-halfkern % Exclude top/bottom borders
+        for blockb=1+halfkern:widthb-halfkern % Exclude side borders
+            array = reshape(B(blocka-halfkern:blocka+halfkern,blockb-halfkern:blockb+halfkern),kernsquare,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageBlue(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
@@ -57,7 +64,7 @@ if (choice==1)
 end;
 %% Gaussian Filtering
 if (choice==2)
-    gauss=fspecial('gaussian',[9 9],3); % Create gaussian distribution filter
+    gauss=fspecial('gaussian',[kernel,kernel],3); % Create gaussian distribution filter
     denoisedImageRed=imfilter(R,gauss); % Apply filter
     denoisedImageGreen=imfilter(G,gauss); % Apply filter
     denoisedImageBlue=imfilter(B,gauss); % Apply filter
@@ -65,12 +72,6 @@ if (choice==2)
 end;
 %% Mean Filtering
 if (choice==3)
-    kernel=input('Please choose a kernel size: ');
-    if (mod(kernel,2)==1)
-        halfkern=(kernel-1)/2;
-    else
-        halfkern=kernel/2;
-    end
     for r=1+halfkern:heightr-halfkern % Isolates filtering based on kernel (height)
         for c=1+halfkern:widthr-halfkern % Isolates filtering based on kernel (widht)
             sumr=0;
@@ -109,8 +110,8 @@ if (choice==3)
             denoisedImageBlue(r,c) = averageb; % Assign the average of the surrounding pixels to a given pixel's value
         end;
     end;
-%% Final Image Composition
-denoisedImage=cat(3,denoisedImageRed,denoisedImageGreen,denoisedImageBlue);
-imshow(denoisedImage); % Display final image
-imwrite(denoisedImage,'images/output.jpg');
+    %% Final Image Composition
+    denoisedImage=cat(3,denoisedImageRed,denoisedImageGreen,denoisedImageBlue);
+    imshow(denoisedImage); % Display final image
+    imwrite(denoisedImage,'images/output.jpg');
 end
