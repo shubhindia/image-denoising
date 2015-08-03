@@ -28,27 +28,27 @@ denoisedImageBlue = zeros(size(B)); % Zero-out final image matrix
 choice=input('Enter 1 for median, 2 for gaussian, or 3 for mean filtering: '); % Requests user input
 %% Median Filtering
 if (choice==1)
-    for blocka=2:heightr-1 % Exclude top/bottom borders
-        for blockb=2:widthr-1 % Exclude side borders
-            array = reshape(R(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+    for blocka=6:heightr-5 % Exclude top/bottom borders
+        for blockb=6:widthr-5 % Exclude side borders
+            array = reshape(R(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageRed(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-     for blocka=2:heightg-1 % Exclude top/bottom borders
-        for blockb=2:widthg-1 % Exclude side borders
-            array = reshape(G(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+    for blocka=6:heightg-5 % Exclude top/bottom borders
+        for blockb=6:widthg-5 % Exclude side borders
+            array = reshape(G(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageGreen(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
         
     end;
     
-     for blocka=2:heightb-1 % Exclude top/bottom borders
-        for blockb=2:widthb-1 % Exclude side borders
-            array = reshape(B(blocka-1:blocka+1,blockb-1:blockb+1),9,1); % Reshape matrix into array
+    for blocka=6:heightb-5 % Exclude top/bottom borders
+        for blockb=6:widthb-5 % Exclude side borders
+            array = reshape(B(blocka-4:blocka+4,blockb-4:blockb+4),81,1); % Reshape matrix into array
             imgmed=median(array); % Find median of array
             denoisedImageBlue(blocka,blockb) = imgmed; % Assign median value to given pixel
         end;
@@ -66,11 +66,16 @@ end;
 %% Mean Filtering
 if (choice==3)
     kernel=input('Please choose a kernel size: ');
-    for r=1+kernel:heightr-kernel % Isolates filtering based on kernel (height)
-        for c=1+kernel:widthr-kernel % Isolates filtering based on kernel (widht)
+    if (mod(kernel,2)==1)
+        halfkern=(kernel-1)/2;
+    else
+        halfkern=kernel/2;
+    end
+    for r=1+halfkern:heightr-halfkern % Isolates filtering based on kernel (height)
+        for c=1+halfkern:widthr-halfkern % Isolates filtering based on kernel (widht)
             sumr=0;
-            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
-                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+            for blockr=r-halfkern:r+halfkern % Isolates filtering based on kernel (height)
+                for blockc=c-halfkern:c+halfkern% Isolates filtering based on kernel (width)
                     sumr= sumr+ R(blockr,blockc); % Sum up the surrounding pixels
                 end;
             end;
@@ -79,11 +84,11 @@ if (choice==3)
         end;
     end;
     
-    for r=1+kernel:heightg-kernel % Isolates filtering based on kernel (height)
-        for c=1+kernel:widthg-kernel % Isolates filtering based on kernel (widht)
+    for r=1+halfkern:heightg-halfkern % Isolates filtering based on kernel (height)
+        for c=1+halfkern:widthg-halfkern % Isolates filtering based on kernel (widht)
             sumg=0;
-            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
-                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+            for blockr=r-halfkern:r+halfkern % Isolates filtering based on kernel (height)
+                for blockc=c-halfkern:c+halfkern% Isolates filtering based on kernel (width)
                     sumg= sumg+ G(blockr,blockc); % Sum up the surrounding pixels
                 end;
             end;
@@ -92,11 +97,11 @@ if (choice==3)
         end;
     end;
     
-    for r=1+kernel:heightb-kernel % Isolates filtering based on kernel (height)
-        for c=1+kernel:widthb-kernel % Isolates filtering based on kernel (widht)
+    for r=1+halfkern:heightb-halfkern % Isolates filtering based on kernel (height)
+        for c=1+halfkern:widthb-halfkern % Isolates filtering based on kernel (widht)
             sumb=0;
-            for blockr=r-kernel+1:r+kernel-1 % Isolates filtering based on kernel (height)
-                for blockc=c-kernel+1:c+kernel-1 % Isolates filtering based on kernel (width)
+            for blockr=r-halfkern:r+halfkern % Isolates filtering based on kernel (height)
+                for blockc=c-halfkern:c+halfkern% Isolates filtering based on kernel (width)
                     sumb= sumb+ B(blockr,blockc); % Sum up the surrounding pixels
                 end;
             end;
@@ -104,8 +109,8 @@ if (choice==3)
             denoisedImageBlue(r,c) = averageb; % Assign the average of the surrounding pixels to a given pixel's value
         end;
     end;
-end;
 %% Final Image Composition
 denoisedImage=cat(3,denoisedImageRed,denoisedImageGreen,denoisedImageBlue);
 imshow(denoisedImage); % Display final image
+imwrite(denoisedImage,'images/output.jpg');
 end
